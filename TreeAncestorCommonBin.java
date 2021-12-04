@@ -1,4 +1,4 @@
-/*56 59 55 60 60 57
+/*
 
 
 1
@@ -27,11 +27,12 @@
 
 */
 
-import java.io.*;
+
+
 import java.util.*;
+import java.io.*;
 
-
-public class TestClass {
+public class HelloWorld {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter wr = new PrintWriter(System.out);
@@ -79,10 +80,11 @@ public class TestClass {
          wr.close();
          br.close();
     }
+    
     static int[] solve(int N, int[] A, int[][] edges, int Q, int[][] query){
        // Write your code here
         int[] result = new int[Q];
-        Tree tree = new TestClass().new Tree(A,N,edges);
+        Tree tree = new HelloWorld().new Tree(A,N,edges);
 
         for(int i = 0 ;i<Q; i++)
         {
@@ -100,14 +102,14 @@ public class TestClass {
 
     class Node
     {
-        public Node parent;
+        public int id;
         public int value;
-        public ArrayList<Integer> child = new ArrayList<Integer>();
+        public ArrayList<Node> child = new ArrayList<Node>();
 
-        public Node(int v)
+        public Node(int i,int v)
         {
             this.value =  v;
-            parent = null;
+            this.id  = i;
         }
             
     }
@@ -115,12 +117,13 @@ public class TestClass {
     public class Tree
     {
         HashMap<Integer,Node> map = new HashMap<Integer,Node>();
+        
 
         public Tree(int[] A , int N , int[][] edges)
         {
             for(int i = 0 ; i<N;i++)
             {
-                Node n = new Node(A[i]);
+                Node n = new Node(i,A[i]);
                 map.put(i,n);
             }
 
@@ -129,42 +132,73 @@ public class TestClass {
                 int[] e = edges[i];
                 int s = e[0]-1;
                 int d = e[1]-1;
-                if(d==0)
-                {
-                    d = s;
-                    s = 0;
-                }
+                
                 Node ns = map.get(s);
                 Node nd = map.get(d);
-
-                nd.parent = ns;
-                ns.child.add(d);
+                ns.child.add(nd);
+                nd.child.add(ns);
             }
+            
         }
 
         public int query(int V, int X)
         {
-            int[] Vb = binary(V);
-            //System.out.println("vb : " + V);
-            Node n = map.get((X-1));
-            int max = 0;
-            while(n!= null)
-            {
-                int[] nb = binary(n.value);
-                //System.out.println("v : " + n.value);
-                int c = common(Vb,nb);
-                max = Math.max(c, max);
-                n= n.parent;
-            }
+          X--;
+          LinkedHashSet<Integer> path = new LinkedHashSet<Integer>();
+          
+          path = findPath(map.get(X),path);
+          
+          
+          int[] Vb = binary(V);
+          //System.out.println("vb : " + V);
+          int max = 0;
+          for(Integer  i : path)
+          { 
+            Node n = map.get(i);    
+            int[] nb = binary(n.value);
+            //System.out.println("v : " + n.value);
+            int c = common(Vb,nb);
+            max = Math.max(c, max);
+              
+          }
 
-            return max;
+          return max;
+        }
+        
+        private LinkedHashSet<Integer> findPath(Node n,LinkedHashSet<Integer> path)
+        {
+           LinkedHashSet<Integer> cPath = (LinkedHashSet<Integer>)path.clone();
+           cPath.add(n.id);
+           if(n.id == 0)
+           {
+              return cPath;
+           }
+           else
+           {
+             for(Node c : n.child)
+             {
+               if(cPath.contains(c.id))
+               {
+                 continue;
+               }
+               else
+               {
+                 LinkedHashSet<Integer> tPath = findPath(c,cPath);
+                 if(tPath!=null)
+                 {
+                   return tPath;
+                 }
+               }
+             }
+           }
+           return null;
         }
 
         private int[] binary(int v)
         {
             int[] res = new int[62];
             int i = 61 ;
-            System.out.println(" v : " + v);
+            //System.out.println(" v : " + v);
             while(v!=0 && i>=0)
             {
                 int rem = v%2;
@@ -172,12 +206,12 @@ public class TestClass {
                 v=v/2;
                 i--;
             }
-            String bin = "";
-            for(int j = 0; j< res.length ; j++ )
-            {
-                bin += res[j];
-            }
-            System.out.println(" bin : " + bin);
+            //String bin = "";
+            //for(int j = 0; j< res.length ; j++ )
+            //{
+              //  bin += res[j];
+            //}
+            //System.out.println(" bin : " + bin);
             return res;
         }
 
@@ -198,8 +232,6 @@ public class TestClass {
             return res;
         }
     }
-
-
+    
+    
 }
-
-
