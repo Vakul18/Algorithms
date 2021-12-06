@@ -40,40 +40,6 @@
 */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import java.io.*;
 import java.util.*;
 
@@ -113,9 +79,183 @@ public class TestClass {
     }
     static int[] collision_time(int N, int Q, int[] Arr, int[][] AB){
        // Write your code here
-        int[] result = {0};
-
+        int[] result = new int[Q] ;
+        Graph g = new TestClass().new Graph();
+        
+        for(int i=0; i<N ; i++)
+        {
+          g.addEdge(i,Arr[i]-1);
+        }
+        
+        for(int i = 0 ;i<Q;i++)
+        {
+          int A = AB[i][0];
+          int B = AB[i][1];
+          
+          result[i] = g.getTime(A,B);
+        }
+        
         return result;
     
     }
+    
+    
+    class Graph
+    {
+       HashMap<Integer,Integer> edges = new HashMap<Integer,Integer>();
+       
+       public void addEdge(int s , int d)
+       {
+           edges.put(s,d);  
+       }
+       
+       public int getTime(int A, int B)
+       {
+        A--;
+        B--;
+        int t = 0;
+        
+        HashSet<Integer> aPath = new HashSet<Integer>();
+        HashSet<Integer> bPath = new HashSet<Integer>();
+        
+        aPath.add(A);
+        bPath.add(B);
+        boolean aRept = false;
+        boolean bRept = false;
+        
+        boolean aStuck = false;
+        boolean bStuck = false;
+        
+        if(A==B)
+          return t;
+        
+        while(!aRept && !bRept)
+        {
+          t++;
+          //System.out.println("t : " + t);
+          if(!aStuck)
+          {
+            if(!edges.containsKey(A))
+            {
+              aRept = true;
+              aStuck = true;
+            }
+            else
+            {
+              int z = edges.get(A);
+              if(z==A)
+              {
+                aRept = true;
+                aStuck = true;
+              }
+              else 
+              {
+                if(aPath.contains(z))
+                {
+                  aRept = true;
+                }
+                A = z;
+              }
+            }
+          }
+          if(!bStuck)
+          {
+            if(!edges.containsKey(B))
+            {
+              bRept = true;
+              bStuck = true;
+            }
+            else
+            {
+              int z = edges.get(B);
+              if(z==B)
+              {
+                bRept = true;
+                bStuck = true;
+              }
+              else
+              {
+                if(bPath.contains(z))
+                {
+                  bRept = true;
+                }
+                B = z;
+              }
+            }
+          }
+          if(A==B)
+            return t;
+        }
+        
+        
+        return -1;
+       
+       }
+       
+       
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
